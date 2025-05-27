@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    color: hsl(var(--foreground));
+    background: hsl(var(--background));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  /* Fix for card visibility issues */
+  .card-container {
+    min-height: fit-content;
+    height: auto;
+    overflow: visible;
+  }
+
+  .card-grid {
+    display: grid;
+    gap: 1.5rem;
+    align-items: stretch;
+    min-height: fit-content;
+  }
+
+  .card-content-full {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem;
+    min-height: 200px;
+  }
+
+  .section-spacing {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+  }
+
+  /* Ensure main content has proper bottom padding */
+  .main-content {
+    padding-bottom: 4rem;
+    min-height: 100vh;
+  }
+
+  /* Fix for dashboard sidebar overlap */
+  .dashboard-main {
+    margin-left: 0;
+    padding: 1.5rem;
+    padding-bottom: 4rem;
+  }
+
+  @media (min-width: 768px) {
+    .dashboard-main {
+      margin-left: 16rem;
+    }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
