@@ -1,14 +1,15 @@
-import { createClient } from "@supabase/supabase-js"
+import { createClient } from "@supabase/supabase-js";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
-// Provide fallback values for development/preview
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co"
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key"
+// Public client — for client-side operations
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
 
-// Only create real client if we have actual values
 const hasValidConfig =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-  process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co"
+  process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
 export const supabase = hasValidConfig
   ? createClient(supabaseUrl, supabaseAnonKey, {
@@ -18,9 +19,8 @@ export const supabase = hasValidConfig
         detectSessionInUrl: true,
       },
     })
-  : null
+  : null;
 
-// Mock client for development without Supabase
 export const mockSupabaseClient = {
   auth: {
     getSession: () => Promise.resolve({ data: { session: null }, error: null }),
@@ -29,7 +29,11 @@ export const mockSupabaseClient = {
     signOut: () => Promise.resolve({ error: null }),
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
   },
-}
+};
 
-// Export the client to use
-export const supabaseClient = supabase || mockSupabaseClient
+export const supabaseClient = supabase || mockSupabaseClient;
+
+// ✅ Add this for server-side usage in Next.js
+export function createServerClient() {
+  return createServerComponentClient({ cookies });
+}
