@@ -2,7 +2,14 @@ import { type NextRequest, NextResponse } from "next/server"
 import { neon } from "@neondatabase/serverless"
 import { getServerSession } from "next-auth"
 
-const sql = neon(process.env.DATABASE_URL!)
+const connectionString = process.env.DATABASE_URL
+
+// Gracefully handle missing DB URL
+if (!connectionString) {
+  throw new Error("DATABASE_URL is not defined in environment variables.")
+}
+
+const sql = neon(connectionString)
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,13 +18,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Check admin access
-    const adminEmails = ["admin@futurevalidate.com", "manas.arora0209@gmail.com", "your-email@gmail.com"] // Add your email
+    const adminEmails = ["admin@futurevalidate.com", "manas.arora0209@gmail.com", "your-email@gmail.com"]
     if (!adminEmails.includes(session.user.email)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    // Get all ideas with user info and validation scores
     const ideas = await sql`
       SELECT 
         i.id,
@@ -36,7 +41,6 @@ export async function GET(request: NextRequest) {
       ORDER BY i.created_at DESC
     `
 
-    // Get stats
     const statsResult = await sql`
       SELECT 
         COUNT(DISTINCT i.id) as total_ideas,
